@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Container, Row} from "react-bootstrap";
+import {Container} from "react-bootstrap";
 import axios from "axios";
 import Footer from "./Components/Footer";
 import Menu from "./Components/Menu";
 import PersonForm from "./Components/PersonForm";
 import PersonTable from "./Components/PersonTable";
+import {ToastContainer} from "react-toastify";
 
 interface Person {
     id: number;
@@ -31,7 +32,15 @@ const Home: React.FC = () => {
                 <PersonForm fetchPersons={fetchPersons}/>
                 <PersonTable persons={persons} fetchPersons={fetchPersons}/>
             </Container>
-            <Footer/>
+            <div>
+                <Footer/>
+                <ToastContainer
+                    autoClose={1500}
+                    hideProgressBar={true}
+                    position="bottom-center"
+                    newestOnTop={true}
+                />
+            </div>
         </>
     );
 };

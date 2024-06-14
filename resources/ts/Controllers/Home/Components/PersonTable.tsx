@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import axios from "axios";
 import {Button, Table} from "react-bootstrap";
 import EditPersonModal from "./EditPersonModal";
+import {toast} from "react-toastify";
 
 interface Person {
     id: number;
@@ -18,9 +19,14 @@ const PersonTable: React.FC<PersonTableProps> = ({persons, fetchPersons}) => {
     const [editPerson, setEditPerson] = useState({id: '', name: ''});
 
     const handleDelete = (id) => {
-        axios.delete(`/persons/${id}`).then(() => {
-            fetchPersons();
-        });
+        axios.delete(`/persons/${id}`)
+            .then((response) => {
+                toast.success(response.data.success);
+                fetchPersons();
+            }).catch(error => {
+                toast.error(error.response.data.message);
+            }
+        );
     };
 
     const handleEdit = (person) => {
@@ -29,10 +35,15 @@ const PersonTable: React.FC<PersonTableProps> = ({persons, fetchPersons}) => {
     };
 
     const handleEditSave = () => {
-        axios.put(`/persons/${editPerson.id}`, editPerson).then(() => {
-            setEditModalShow(false);
-            fetchPersons();
-        });
+        axios.put(`/persons/${editPerson.id}`, editPerson)
+            .then((response) => {
+                toast.success(response.data.success);
+                setEditModalShow(false);
+                fetchPersons();
+            }).catch(error => {
+                toast.error(error.response.data.message);
+            }
+        );
     };
 
     const handleChange = (e) => {

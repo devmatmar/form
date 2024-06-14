@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Person;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,19 +28,18 @@ class PersonController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'min:3' ,'max:255'],
         ]);
 
-
-        if ($validated) {
+        try {
             Person::create([
                 'name' => $validated['name'],
             ]);
 
             return response()->json(['success' => 'Successfully created!']);
 
-        } else {
-            return response()->json(['error' => 'Error during creation']);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
         }
     }
 
@@ -56,7 +56,7 @@ class PersonController extends Controller
             'name' => ['required', 'string', 'max:255'],
         ]);
 
-        if ($validated) {
+        try {
 
             $person->update([
                 'name' => $validated['name'],
@@ -64,8 +64,8 @@ class PersonController extends Controller
 
             return response()->json(['success' => 'Successfully edited!']);
 
-        } else {
-            return response()->json(['error' => 'Error during edition']);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
         }
     }
 
@@ -77,7 +77,15 @@ class PersonController extends Controller
      */
     public function destroy(Person $person): JsonResponse
     {
-        $person->delete();
-        return response()->json(['success' => 'Successfully deleted!']);
+        try {
+
+            $person->delete();
+
+            return response()->json(['success' => 'Successfully deleted!']);
+
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()]);
+        }
+
     }
 }
