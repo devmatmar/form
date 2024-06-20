@@ -18,6 +18,9 @@ class Person extends Model
      * @var string[]
      */
     protected $fillable = [
-        'name',
+        'lastname',
+        'firstname',
+        'file',
+        'hash',
     ];
 }

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreatePersonRequest;
+use App\Http\Requests\EditPersonRequest;
 use App\Models\Person;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class PersonController
@@ -21,48 +24,68 @@ class PersonController extends Controller
 
     /**
      * store a person
-     * @param Request $request
+     * @param CreatePersonRequest $request
      * @return JsonResponse
      * @author MARIANI Matthieu <devmattmar@gmail.com>
      */
-    public function store(Request $request): JsonResponse
+    public function store(CreatePersonRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'min:3' ,'max:255'],
-        ]);
+        $validated = $request->validated();
 
         try {
-            Person::create([
-                'name' => $validated['name'],
-            ]);
+            $path = null;
 
-            return response()->json(['success' => 'Successfully created!']);
+            if ($request->hasFile('file')) {
+                $path = $validated['file']->store('files', 'public');
+
+                if ($path === false) {
+                    return response()->json(['error' => 'File upload failed'], 500);
+                }
+            }
+
+            $data = [
+                "lastname" => $validated['lastname'],
+                "firstname" => $validated['firstname'],
+                "file" => $path,
+            ];
+
+            if (isset($validated['hash'])) {
+                $data['lastname'] = Hash::make($validated['lastname']);
+                $data['firstname'] = Hash::make($validated['firstname']);
+                $data['hash'] = $validated['hash'];
+            }
+
+            Person::create($data);
+
+            return response()->json(['success' => 'Successfully created!'], 201);
 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
     }
 
+
     /**
      * edit a person
-     * @param Request $request
+     * @param EditPersonRequest $request
      * @param Person $person
      * @return JsonResponse
      * @author MARIANI Matthieu <devmattmar@gmail.com>
      */
-    public function edit(Request $request, Person $person): JsonResponse
+    public function edit(EditPersonRequest $request, Person $person): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         try {
 
-            $person->update([
-                'name' => $validated['name'],
-            ]);
+            $data = [
+                "lastname" => $validated['lastname'],
+                "firstname" => $validated['firstname'],
+            ];
 
-            return response()->json(['success' => 'Successfully edited!']);
+            $person->update($data);
+
+            return response()->json(['success' => 'Successfully edited!'], 201);
 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
@@ -79,9 +102,14 @@ class PersonController extends Controller
     {
         try {
 
-            $person->delete();
+            if ($person->file) {
+                unlink(storage_path('app/public/' . $person->file));
+                $person->delete();
+                return response()->json(['success' => 'File and data Successfully deleted!'], 201);
+            }
 
-            return response()->json(['success' => 'Successfully deleted!']);
+            $person->delete();
+            return response()->json(['success' => 'Successfully deleted!'], 201);
 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()]);

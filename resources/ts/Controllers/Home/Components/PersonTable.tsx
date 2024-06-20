@@ -6,7 +6,10 @@ import {toast} from "react-toastify";
 
 interface Person {
     id: number;
-    name: string;
+    lastname: string;
+    firstname: string;
+    file: string;
+    hash: boolean;
 }
 
 interface PersonTableProps {
@@ -56,15 +59,21 @@ const PersonTable: React.FC<PersonTableProps> = ({persons, fetchPersons}) => {
             <Table responsive={true} bordered={true} striped={true} hover={true}>
                 <thead>
                 <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col" style={{width: "20%"}}>Actions</th>
+                    <th scope="col" style={{width: "auto"}}>Lastname</th>
+                    <th scope="col" style={{width: "auto"}}>Firstname</th>
+                    <th scope="col" style={{width: "auto"}}>File</th>
+                    <th scope="col" style={{width: "auto"}}>Hash</th>
+                    <th scope="col" style={{width: "auto"}}>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
                 {persons && persons.map((person) => (
                     <tr key={person.id}>
-                        <td valign="middle">{person.name}</td>
-                        <td className="d-flex justify-content-center gap-2">
+                        <td valign="middle" style={{whiteSpace: "normal", wordBreak: "break-word"}}>{person.lastname}</td>
+                        <td valign="middle" style={{whiteSpace: "normal", wordBreak: "break-word"}}>{person.firstname}</td>
+                        <td valign="middle" style={{whiteSpace: "normal", wordBreak: "break-word"}}>{person.file}</td>
+                        <td valign="middle" style={{whiteSpace: "normal", wordBreak: "break-word"}}>{person.hash}</td>
+                        <td valign="middle" className={"d-flex justify-content-center align-items-center gap-2"}>
                             <Button variant="warning" onClick={() => handleEdit(person)}>Edit</Button>
                             <Button variant="danger" onClick={() => handleDelete(person.id)}>Delete</Button>
                         </td>

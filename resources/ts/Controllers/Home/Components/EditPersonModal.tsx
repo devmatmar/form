@@ -1,44 +1,49 @@
 import React from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import {Modal, Button, Form, ModalHeader, ModalTitle, ModalBody, FormGroup, FormLabel, FormControl, ModalFooter} from "react-bootstrap";
 
 interface EditPersonModalProps {
     show: boolean;
     handleClose: () => void;
-    person: { id: number; name: string };
+    person: { id: number; lastname: string, firstname: string };
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSave: () => void;
 }
 
-const EditPersonModal: React.FC<EditPersonModalProps> = ({
-                                                             show,
-                                                             handleClose,
-                                                             person,
-                                                             handleChange,
-                                                             handleSave
-                                                         }) => {
+const EditPersonModal: React.FC<EditPersonModalProps> = ({show, handleClose, person, handleChange, handleSave}) => {
+
     return (
         <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Edit Person</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
+            <ModalHeader closeButton>
+                <ModalTitle>Edit Person</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
                 <Form>
-                    <Form.Group controlId="formName">
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control
+                    <FormGroup>
+                        <FormLabel>lastname</FormLabel>
+                        <FormControl
                             type="text"
-                            placeholder="Enter name"
-                            name="name"
-                            value={person.name}
+                            placeholder="Enter lastname"
+                            name="lastname"
+                            value={person.lastname}
                             onChange={handleChange}
                         />
-                    </Form.Group>
+                    </FormGroup>
+                    <FormGroup>
+                        <FormLabel>firstname</FormLabel>
+                        <FormControl
+                            type="text"
+                            placeholder="Enter firstname"
+                            name="firstname"
+                            value={person.firstname}
+                            onChange={handleChange}
+                        />
+                    </FormGroup>
                 </Form>
-            </Modal.Body>
-            <Modal.Footer>
+            </ModalBody>
+            <ModalFooter>
                 <Button variant="secondary" onClick={handleClose}>Close</Button>
                 <Button variant="primary" onClick={handleSave}>Save changes</Button>
-            </Modal.Footer>
+            </ModalFooter>
         </Modal>
     );
 };
